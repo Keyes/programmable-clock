@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <style>
+            label { width: 100px; display: inline-block; }
+            .clock
+            {
+                font-weight: bold;
+                padding: 10px 0;
+            }
+        </style>
+        <script>
+            var cycle = {};
+            var clock = { ms: 0, sec: 0, min: 0, h: 0, d: 1, w: 0, m: 1, y: 1 };
+
+            function getSettings()
+            {
+                return {
+                    ms: 10,
+                    sec: parseFloat($('.minLength').val()),
+                    min: parseFloat($('.hLength').val()),
+                    h: parseFloat($('.dayLength').val()),
+                    d: parseFloat($('.weekLength').val()),
+                    w: parseFloat($('.monthLength').val()),
+                    m: parseFloat($('.yearLength').val()),
+                    y: 999999,
+                };
+            }
+
+            function clockTick(conf)
+            {
+                for(var key in clock) {
+                    if (clock[key] < conf[key])
+                    {
+                        clock[key] = clock[key]+1;
+                        break;
+                    }
+                    else
+                    {
+                        clock[key] = 0;
+                    }
+                }
+
+                updateClock();
+            }
+
+            function updateClock()
+            {
+                var ele = $('.clock');
+                ele.html(
+                    pad(clock.h, 2) + ':' + 
+                    pad(clock.min, 2) + ':' + 
+                    pad(clock.sec, 2) + ' Uhr - ' + 
+                    pad(clock.d, 2) + '.' + 
+                    pad(clock.m, 2) + '.' + 
+                    pad(clock.y, 4)
+                );
+            }
+
+            function startClock(conf)
+            {
+                cycle = setInterval(function() { clockTick(conf) }, 100);
+            }
+
+            function stopClock()
+            {
+                clearInterval(cycle);
+            }
+
+            $(document).ready(function() {
+                updateClock();
+
+                $('.startClock').on('click', function() {
+                    var config = getSettings();
+                    startClock(config);
+                })
+            });
+
+            function pad(num, size) {
+                var s = num+'';
+                while (s.length < size) s = '0' + s;
+                return s;
+            }
+
+        </script>
+    </head>
+    <body>
+        Falls du zufällig durch ein Dimensionsportal reist, einen neuen Planeten entdeckst, oder die Menschheit ausrottest, und eine neue Zeitrechnung starten musst, hier ist die Lösung: Die Programmierbare Uhr! Die einzige fixe Konstante: die Millisekunde. Sorry. Die Browser sind schuld.<br /><br />
+        <label>1 Sekunde</label> = <input type="number" readonly disabled value="1000" class="secLength"> ms<br />
+        <label>1 Minute</label> = <input type="number" value="60" class="minLength"> s<br />
+        <label>1 Stunde</label> = <input type="number" value="60" class="hLength"> min<br />
+        <label>1 Tag</label> = <input type="number" value="24" class="dayLength"> h<br />
+        <label>1 Woche</label> = <input type="number" value="7" class="weekLength"> d<br />
+        <label>1 Monat</label> = <input type="number" value="30" class="monthLength"> d<br />
+        <label>1 Jahr</label> = <input type="number" value="52" class="yearLength"> Wochen<br />
+        <button class="startClock">Uhr starten</button>
+        <div class="clock"></div>
+    </body>
+</html>
